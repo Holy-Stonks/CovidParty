@@ -1,9 +1,10 @@
-from project.Room import Room
+from project.Chat import Room
 
 
 class User:
     MAIN = 0
     CHAT = 1
+    TRAIN = 2
 
     EMPTY = Room(0)
 
