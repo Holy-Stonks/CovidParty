@@ -1,33 +1,47 @@
 from project.User import User
 from project.Chat import Room
 from random import randint
+from project.Database import Firebase as fb
 
 
 class ChatHolder:
-    def __init__(self):
-        self.createRoom()
+    activeRoom = 'VVl9oC8uwhAohqF3Rb2i'
 
-    def addUser(self, sessionApi, user):
-        user.activity = User.CHAT
-        self.room.users.append(user)
-        room = self.room
-        if len(self.room.users) == self.room.size:
-            self.room.start(sessionApi)
-            self.createRoom()
-        user.room = room
+    @staticmethod
+    def addUser(sessionApi, user):
+        fb.userUpdate(user, 'activity', User.CHAT)
+        users, size = fb.addUserToRoom(user, ChatHolder.getRoom(ChatHolder.activeRoom))
+        room = ChatHolder.activeRoom
+        if len(users) == size:
+            Room.start(sessionApi, ChatHolder.activeRoom)
+            ChatHolder.createRoom()
+        fb.userUpdate(user, 'room', room)
 
-    def disconnect(self, sessionApi, user):
-        user.room.reply(sessionApi, user.userId, user.firstName + ' покидает чат.')
-        user.room.users.remove(user)
+    @staticmethod
+    def getRoom(roomId):
+        room = fb.getRoom(roomId)
+        newRoom = Room(room['size'])
+        newRoom.roomId = room['roomId']
+        newRoom.users = room['users']
+        newRoom.isActive = room['isActive']
+        return newRoom
 
-    def removeUser(self, sessionApi, user):
-        self.disconnect(sessionApi, user)
-        user.activity = User.MAIN
-        user.room = User.EMPTY
+    @staticmethod
+    def disconnect(sessionApi, user):
+        room = ChatHolder.getRoom(user.room)
+        room.reply(sessionApi, user.userId, user.firstName + ' покидает чат.')
+        fb.removeUserFromRoom(user, ChatHolder.getRoom(user.room))
 
+    @staticmethod
+    def removeUser(sessionApi, user):
+        ChatHolder.disconnect(sessionApi, user)
+        fb.userUpdate(user, 'activity', User.MAIN)
+
+    @staticmethod
     def findNext(self, sessionApi, user):
-        self.disconnect(sessionApi, user)
-        self.addUser(sessionApi, user)
+        ChatHolder.disconnect(sessionApi, user)
+        ChatHolder.addUser(sessionApi, user)
 
-    def createRoom(self):
-        self.room = Room(randint(2, 4))
+    @staticmethod
+    def createRoom():
+        ChatHolder.activeRoom = fb.createRoom(randint(2, 4))

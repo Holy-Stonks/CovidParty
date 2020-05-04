@@ -8,8 +8,8 @@ class User:
 
     EMPTY = Room(0)
 
-    def __init__(self, userId, sessionApi):
+    def __init__(self, userId, firstName):
         self.userId = userId
-        self.firstName = sessionApi.users.get(user_ids=self.userId)[0]['first_name']
+        self.firstName = firstName
         self.activity = User.MAIN
         self.room = User.EMPTY

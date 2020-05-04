@@ -1,5 +1,4 @@
 from project.Methods import Methods
-from random import random
 
 
 class Conv:
@@ -11,10 +10,7 @@ class Conv:
 
     def start(self, sessionApi):
         print([i.userId for i in self.users])
-        self.chatId = sessionApi.messages.createChat(title=self.topic)
-        link = sessionApi.messages.getInviteLink(peer_id=2_000_000_000+self.chatId)
-        Methods.broadcast(sessionApi, self.users, link)
+        #self.chatId = sessionApi.messages.createChat(title=self.topic)
+        link = sessionApi.messages.getInviteLink(peer_id=2_000_000_000+40)#self.chatId)
+        Methods.broadcast(sessionApi, user_ids=[i.userId for i in self.users], message=link)
         self.isActive = True
-
-    def reply(self, sessinApi, text, attachment=None):
-        Methods.sendMessage(sessinApi, user_id=self.chatId, message=text, attachment=attachment)

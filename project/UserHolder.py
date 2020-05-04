@@ -1,16 +1,21 @@
 from project.User import User
+from project.Database import Firebase as fb
 
 
 class UserHolder:
-    def __init__(self):
-        self.users = []
-
-    def createUser(self, userId, sessionApi):
-        newUser = User(userId, sessionApi)
-        self.users.append(newUser)
+    @staticmethod
+    def createUser(sessionApi, userId):
+        newUser = User(userId, sessionApi.users.get(user_ids=userId)[0]['first_name'])
+        fb.createUser(newUser)
         return newUser
 
-    def getUser(self, userId):
-        for user in self.users:
-            if user.userId == userId:
-                return user
+    @staticmethod
+    def getUser(userId):
+        userData = fb.getUser(userId)
+        if userData is not None:
+            user = User(userData['userId'], userData['firstName'])
+            user.activity = userData['activity']
+            user.room = userData['room']
+            user.interest = userData['interest']
+            user.parsedInterest = userData['parsedInterest']
+            return user
