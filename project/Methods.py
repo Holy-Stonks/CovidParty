@@ -9,5 +9,6 @@ class Methods:
 
     @staticmethod
     def broadcast(sessionApi, user_ids, message=None, attachment=None, keyboard=None):
-        sessionApi.messages.send(user_ids=user_ids, message=message, attachment=attachment,
+        if user_ids != []:
+            sessionApi.messages.send(user_ids=user_ids, message=message, attachment=attachment,
                                  keyboard=keyboard, random_id=random())

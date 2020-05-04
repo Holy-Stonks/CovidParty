@@ -1,12 +1,9 @@
-from project.Chat import Room
-
-
 class User:
     MAIN = 0
     CHAT = 1
     TRAIN = 2
 
-    EMPTY = Room(0)
+    EMPTY = ''
 
     def __init__(self, userId, firstName):
         self.userId = userId

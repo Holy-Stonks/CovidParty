@@ -2,18 +2,27 @@ from project.User import User
 from project.Chat import Room
 from random import randint
 from project.Database import Firebase as fb
+from project.Methods import Methods
 
 
 class ChatHolder:
-    activeRoom = 'VVl9oC8uwhAohqF3Rb2i'
+
+    activeRoom = ''
+
+    def __init__(self):
+        ChatHolder.activeRoom = fb.initActiveRoom()
+        if ChatHolder.activeRoom is None:
+            ChatHolder.createRoom()
 
     @staticmethod
     def addUser(sessionApi, user):
         fb.userUpdate(user, 'activity', User.CHAT)
-        users, size = fb.addUserToRoom(user, ChatHolder.getRoom(ChatHolder.activeRoom))
+        activeRoom = ChatHolder.getRoom(ChatHolder.activeRoom)
+        users, size = fb.addUserToRoom(user, activeRoom)
         room = ChatHolder.activeRoom
         if len(users) == size:
-            Room.start(sessionApi, ChatHolder.activeRoom)
+            activeRoom.start(sessionApi)
+            fb.roomUpdate(ChatHolder.activeRoom, 'isActive', True)
             ChatHolder.createRoom()
         fb.userUpdate(user, 'room', room)
 
@@ -29,7 +38,7 @@ class ChatHolder:
     @staticmethod
     def disconnect(sessionApi, user):
         room = ChatHolder.getRoom(user.room)
-        room.reply(sessionApi, user.userId, user.firstName + ' покидает чат.')
+        Methods.broadcast(sessionApi, [i for i in room.users if i != user.userId], user.firstName + ' покидает чат.')
         fb.removeUserFromRoom(user, ChatHolder.getRoom(user.room))
 
     @staticmethod
@@ -38,7 +47,7 @@ class ChatHolder:
         fb.userUpdate(user, 'activity', User.MAIN)
 
     @staticmethod
-    def findNext(self, sessionApi, user):
+    def findNext(sessionApi, user):
         ChatHolder.disconnect(sessionApi, user)
         ChatHolder.addUser(sessionApi, user)
 
