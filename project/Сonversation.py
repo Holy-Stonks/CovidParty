@@ -11,6 +11,7 @@ class Conv:
     def start(self, sessionApi):
         print([i.userId for i in self.users])
         self.chatId = sessionApi.messages.createChat(title=self.topic)
-        link = sessionApi.messages.getInviteLink(peer_id=2_000_000_000 + self.chatId)
-        Methods.broadcast(sessionApi, user_ids=[i.userId for i in self.users], message=link)
+        link = sessionApi.messages.getInviteLink(peer_id=2_000_000_000+self.chatId)
+        Methods.broadcast(sessionApi, user_ids=[i.userId for i in self.users],
+                          message='Перейди по ссылке и пиши "гоу", чтобы начать.' + link['link'])
         self.isActive = True

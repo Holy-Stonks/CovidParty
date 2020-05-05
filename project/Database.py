@@ -33,7 +33,6 @@ class Firebase:
             field: value
         })
         print(response)
-        return response
 
     @staticmethod
     def createRoom(size):

@@ -12,3 +12,12 @@ class Methods:
         if user_ids != []:
             sessionApi.messages.send(user_ids=user_ids, message=message, attachment=attachment,
                                  keyboard=keyboard, random_id=random())
+
+    @staticmethod
+    def sendChatMessage(sessionApi, chat_id, message=None, attachment=None, keyboard=None):
+        sessionApi.messages.send(chat_id=chat_id, message=message, attachment=attachment, keyboard=keyboard,
+                                 random_id=random())
+
+    @staticmethod
+    def removeChatUser(sessionApi, chat_id, user_id):
+        sessionApi.messages.removeChatUser(chat_id=chat_id, user_id=user_id, member_id=user_id)
